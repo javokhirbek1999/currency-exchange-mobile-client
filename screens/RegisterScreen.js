@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import axiosInstance from '../axios';
 
 export default function RegisterScreen({ navigation }) {
   const [firstName, setFirstName] = useState('');
@@ -7,21 +16,54 @@ export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = () => {
-    // Handle registration logic here
-    console.log('First Name:', firstName);
-    console.log('Last Name:', lastName);
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Confirm Password:', confirmPassword);
+  const handleRegister = async () => {
+    // Check if all fields are filled
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    // Check if password and confirmPassword match
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axiosInstance.post('/api/users/create/', {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password,
+        confirm_password: confirmPassword, // Add confirm_password here
+      });
+
+      setLoading(false);
+      Alert.alert('Success', 'Account created successfully');
+      navigation.navigate('Login');
+    } catch (error) {
+      setLoading(false);
+      if (error.response) {
+        console.log('Error response:', error.response);
+        
+        // Display specific error message returned by the backend
+        const errorMessage = error.response.data.detail || error.response.data.email || 'Something went wrong';
+        Alert.alert('Registration Failed', errorMessage);
+      } else {
+        console.log('Axios error:', error);
+        Alert.alert('Error', 'Something went wrong. Please try again later.');
+      }
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register</Text>
 
-      {/* First Name Input */}
       <TextInput
         style={styles.input}
         placeholder="First Name"
@@ -29,8 +71,6 @@ export default function RegisterScreen({ navigation }) {
         value={firstName}
         onChangeText={setFirstName}
       />
-
-      {/* Last Name Input */}
       <TextInput
         style={styles.input}
         placeholder="Last Name"
@@ -38,8 +78,6 @@ export default function RegisterScreen({ navigation }) {
         value={lastName}
         onChangeText={setLastName}
       />
-
-      {/* Email Input */}
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -48,8 +86,6 @@ export default function RegisterScreen({ navigation }) {
         value={email}
         onChangeText={setEmail}
       />
-
-      {/* Password Input */}
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -58,8 +94,6 @@ export default function RegisterScreen({ navigation }) {
         value={password}
         onChangeText={setPassword}
       />
-
-      {/* Confirm Password Input */}
       <TextInput
         style={styles.input}
         placeholder="Confirm Password"
@@ -69,12 +103,14 @@ export default function RegisterScreen({ navigation }) {
         onChangeText={setConfirmPassword}
       />
 
-      {/* Register Button */}
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Register</Text>
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Register</Text>
+        )}
       </TouchableOpacity>
 
-      {/* Login Link */}
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
         <Text style={styles.loginText}>Already have an account? Login</Text>
       </TouchableOpacity>
@@ -111,7 +147,6 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#007bff',
     paddingVertical: 15,
-    paddingHorizontal: 30,
     borderRadius: 8,
     width: '100%',
     alignItems: 'center',
@@ -125,7 +160,7 @@ const styles = StyleSheet.create({
   loginText: {
     color: '#007bff',
     fontSize: 14,
-    textDecorationLine: 'underline', // Underlined text
+    textDecorationLine: 'underline',
     marginTop: 10,
   },
 });
