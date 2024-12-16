@@ -1,12 +1,12 @@
-// DashboardScreen.js
+// UserProfileScreen.js
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function DashboardScreen() {
+export default function UserProfileScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Dashboard</Text>
-      <Text style={styles.content}>Welcome to your Dashboard. Here you can manage your account and view your activities.</Text>
+      <Text style={styles.title}>User Profile</Text>
+      <Text style={styles.content}>Manage your user profile here. Update personal details and settings.</Text>
     </View>
   );
 }

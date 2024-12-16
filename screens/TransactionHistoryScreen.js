@@ -1,12 +1,12 @@
-// DashboardScreen.js
+// TransactionHistoryScreen.js
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function DashboardScreen() {
+export default function TransactionHistoryScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Dashboard</Text>
-      <Text style={styles.content}>Welcome to your Dashboard. Here you can manage your account and view your activities.</Text>
+      <Text style={styles.title}>Transaction History</Text>
+      <Text style={styles.content}>Here you can view your transaction history.</Text>
     </View>
   );
 }

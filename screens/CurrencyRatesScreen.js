@@ -1,12 +1,12 @@
-// DashboardScreen.js
+// CurrencyRatesScreen.js
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function DashboardScreen() {
+export default function CurrencyRatesScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Dashboard</Text>
-      <Text style={styles.content}>Welcome to your Dashboard. Here you can manage your account and view your activities.</Text>
+      <Text style={styles.title}>Currency Rates</Text>
+      <Text style={styles.content}>Here you can view the latest currency exchange rates.</Text>
     </View>
   );
 }
