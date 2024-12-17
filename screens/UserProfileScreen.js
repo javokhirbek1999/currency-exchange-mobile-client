@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -18,10 +17,13 @@ export default function UserProfileScreen() {
     email: '',
     first_name: '',
     last_name: '',
-    password: '',
-    confirm_password: '',  // Added for password confirmation
+    password: '',       // For current password
+    new_password: '',   // For new password
+    confirm_password: '',  // For password confirmation
   });
   const [originalEmail, setOriginalEmail] = useState('');
+  const [notification, setNotification] = useState(''); // To display notifications
+  const [notificationType, setNotificationType] = useState(''); // Success or error
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -34,12 +36,14 @@ export default function UserProfileScreen() {
             first_name: user.first_name,
             last_name: user.last_name,
             password: '', // Make password empty initially
+            new_password: '', // Make new_password empty initially
             confirm_password: '', // Make confirm_password empty initially
           });
           setOriginalEmail(user.email); // Store the original email for the update request
         }
       } catch (error) {
-        Alert.alert('Error', 'Failed to fetch user data');
+        setNotification('Failed to fetch user data. Please try again.');
+        setNotificationType('error');
         console.error('Error fetching user data:', error);
       } finally {
         setLoading(false);
@@ -51,16 +55,21 @@ export default function UserProfileScreen() {
 
   const handleUpdate = async () => {
     if (!userData.first_name || !userData.last_name) {
-      Alert.alert('Error', 'First Name and Last Name are required');
+      setNotification('First Name and Last Name are required.');
+      setNotificationType('error');
       return;
     }
 
-    if (userData.password && userData.password !== userData.confirm_password) {
-      Alert.alert('Error', 'Passwords do not match');
+    if (userData.new_password && userData.new_password !== userData.confirm_password) {
+      setNotification('New Password and Confirm Password do not match.');
+      setNotificationType('error');
       return;
     }
 
     setSaving(true);
+    setNotification(''); // Reset notification before attempting update
+    setNotificationType(''); // Reset notification type
+
     try {
       // Prepare data for updating
       const updateData = {
@@ -69,8 +78,10 @@ export default function UserProfileScreen() {
         email: userData.email,
       };
 
-      if (userData.password) {
-        updateData.password = userData.password;
+      // If password change is requested, include current_password and new_password
+      if (userData.new_password) {
+        updateData.current_password = userData.password;  // current password
+        updateData.new_password = userData.new_password;  // new password
       }
 
       const response = await axiosInstance.put(`/users/${originalEmail}/update/`, updateData);
@@ -78,11 +89,13 @@ export default function UserProfileScreen() {
       // Update AsyncStorage with the new user data
       await AsyncStorage.setItem('user_data', JSON.stringify(response.data));
 
-      Alert.alert('Success', 'Profile updated successfully');
+      setNotification('Profile updated successfully');
+      setNotificationType('success');
       setOriginalEmail(userData.email); // Update the original email for future updates
     } catch (error) {
       console.error('Error updating profile:', error);
-      Alert.alert('Error', 'Failed to update profile. Please try again.');
+      setNotification('Failed to update profile. Please try again.');
+      setNotificationType('error');
     } finally {
       setSaving(false);
     }
@@ -118,13 +131,26 @@ export default function UserProfileScreen() {
         value={userData.email}
         onChangeText={(text) => setUserData((prev) => ({ ...prev, email: text }))}
       />
+      
+      {/* Current Password Field */}
       <TextInput
         style={styles.input}
-        placeholder="New Password (optional)"
+        placeholder="Current Password (optional)"
         secureTextEntry
         value={userData.password}
         onChangeText={(text) => setUserData((prev) => ({ ...prev, password: text }))}
       />
+
+      {/* New Password Field */}
+      <TextInput
+        style={styles.input}
+        placeholder="New Password (optional)"
+        secureTextEntry
+        value={userData.new_password}
+        onChangeText={(text) => setUserData((prev) => ({ ...prev, new_password: text }))}
+      />
+
+      {/* Confirm New Password Field */}
       <TextInput
         style={styles.input}
         placeholder="Confirm New Password"
@@ -140,6 +166,13 @@ export default function UserProfileScreen() {
           <Text style={styles.buttonText}>Update Profile</Text>
         )}
       </TouchableOpacity>
+
+      {/* Display Notification */}
+      {notification ? (
+        <Text style={[styles.notification, notificationType === 'success' ? styles.success : styles.error]}>
+          {notification}
+        </Text>
+      ) : null}
     </View>
   );
 }
@@ -186,5 +219,17 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  notification: {
+    marginTop: 15,
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  success: {
+    color: '#28a745', // Green color for success
+  },
+  error: {
+    color: '#d9534f', // Red color for errors
   },
 });
