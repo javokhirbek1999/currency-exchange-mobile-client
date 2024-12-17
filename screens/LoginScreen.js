@@ -15,14 +15,19 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState('');
+  const [notificationType, setNotificationType] = useState('');
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      setNotification('Please fill in all fields');
+      setNotificationType('error');
       return;
     }
 
     setLoading(true);
+    setNotification(''); // Reset previous notification
+    setNotificationType(''); // Reset notification type
 
     try {
       // Send POST request to the login endpoint (users/token)
@@ -51,12 +56,27 @@ export default function LoginScreen({ navigation }) {
         // Navigate to Dashboard after successful login
         navigation.navigate('Dashboard'); // Replace 'Dashboard' with actual screen name
       } else {
-        Alert.alert('Error', 'Login failed. Please check your credentials.');
+        setNotification('Wrong email or wrong password');
+        setNotificationType('error');
       }
     } catch (error) {
       setLoading(false);
       console.error('Login Error:', error);
-      Alert.alert('Error', 'Something went wrong. Please try again later.');
+
+      // Handle different error types and display specific messages
+      if (error.response) {
+        // If the server responded with an error (e.g., wrong credentials)
+        setNotification('Wrong email or wrong password');
+        setNotificationType('error');
+      } else if (error.request) {
+        // If no response was received
+        setNotification('No response from server. Please check your internet connection.');
+        setNotificationType('error');
+      } else {
+        // General error
+        setNotification('Something went wrong. Please try again later.');
+        setNotificationType('error');
+      }
     }
   };
 
@@ -92,6 +112,13 @@ export default function LoginScreen({ navigation }) {
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
         <Text style={styles.registerText}>Don't have an account? Register</Text>
       </TouchableOpacity>
+
+      {/* Display Notification */}
+      {notification && (
+        <Text style={[styles.notification, notificationType === 'error' ? styles.error : styles.success]}>
+          {notification}
+        </Text>
+      )}
     </View>
   );
 }
@@ -140,5 +167,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textDecorationLine: 'underline',
     marginTop: 10,
+  },
+  notification: {
+    marginTop: 15,
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  success: {
+    color: '#28a745', // Green color for success
+  },
+  error: {
+    color: '#d9534f', // Red color for errors
   },
 });
