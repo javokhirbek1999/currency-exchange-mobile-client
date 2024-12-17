@@ -34,7 +34,7 @@ export default function RegisterScreen({ navigation }) {
     setLoading(true);
 
     try {
-      const response = await axiosInstance.post('/api/users/create/', {
+      const response = await axiosInstance.post('/users/create/', {
         first_name: firstName,
         last_name: lastName,
         email,

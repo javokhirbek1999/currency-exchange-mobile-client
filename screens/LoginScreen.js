@@ -26,7 +26,7 @@ export default function LoginScreen({ navigation }) {
 
     try {
       // Send POST request to the login endpoint (users/token)
-      const response = await axiosInstance.post('/api/users/token/', {
+      const response = await axiosInstance.post('/users/login/', {
         email,
         password,
       });
