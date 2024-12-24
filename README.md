@@ -111,6 +111,7 @@ Access the `axios.js` file in the home folder of the mobile client and change th
 <p>Once the registration is successful, you will be re-directed to Login Screen</p>
 
 **Login Screen**
+<br/>
 ![login-screen-blank](./assets/AppScreenshots/login_screen_blank.jpg)
 
 <p>Fill in your email and password.</p>
@@ -170,7 +171,7 @@ Access the `axios.js` file in the home folder of the mobile client and change th
 <p>As you can see, I have successfully addded a new USD wallet.</p>
 
 **Transfer Funds between Wallets**
-
+<br/>
 <p>To transfer funds between wallets, click transfer funds button and the following modal pops up.</p>
 
 ![transfer-funds](./assets/AppScreenshots/transfer_runds_screen.jpg)
