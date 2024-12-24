@@ -59,20 +59,44 @@ export default function CurrencyRatesScreen() {
       setLoadingArchived(true);
       setErrorArchived(null);
 
-      // Fetch archived rates for selected date
-      const responseA = await fetch(`https://api.nbp.pl/api/exchangerates/tables/A/${date}?format=json`);
-      const responseB = await fetch(`https://api.nbp.pl/api/exchangerates/tables/B/${date}?format=json`);
-      const responseC = await fetch(`https://api.nbp.pl/api/exchangerates/tables/C/${date}?format=json`);
+      console.log("Fetching archived rates for date:", date);  // Log the selected date
 
-      const dataA = await responseA.json();
-      const dataB = await responseB.json();
-      const dataC = await responseC.json();
+      // Adding headers to handle CORS issue if needed
+      const headers = {
+        'Content-Type': 'application/json',
+        // 'Access-Control-Allow-Origin': '*',  // Uncomment if you encounter CORS issues
+      };
+
+      // Fetch archived rates for selected date with headers
+      const responseA = await fetch(`https://api.nbp.pl/api/exchangerates/tables/A/${date}?format=json`, { headers });
+      const responseB = await fetch(`https://api.nbp.pl/api/exchangerates/tables/B/${date}?format=json`, { headers });
+      const responseC = await fetch(`https://api.nbp.pl/api/exchangerates/tables/C/${date}?format=json`, { headers });
+
+      // Log the response status codes
+      console.log("Response A status:", responseA.status);
+      console.log("Response B status:", responseB.status);
+      console.log("Response C status:", responseC.status);
+
+      // Handle the case where one of the responses returns 404
+      if (!responseA.ok && responseA.status !== 404) {
+        throw new Error("Failed to fetch data for table A");
+      }
+      if (!responseB.ok && responseB.status !== 404) {
+        throw new Error("Failed to fetch data for table B");
+      }
+      if (!responseC.ok && responseC.status !== 404) {
+        throw new Error("Failed to fetch data for table C");
+      }
+
+      const dataA = responseA.ok ? await responseA.json() : [];
+      const dataB = responseB.ok ? await responseB.json() : [];
+      const dataC = responseC.ok ? await responseC.json() : [];
 
       // Combine the data from all tables into a single array
       const allRates = [
-        ...dataA[0].rates,
-        ...dataB[0].rates,
-        ...dataC[0].rates,
+        ...dataA[0]?.rates || [],
+        ...dataB[0]?.rates || [],
+        ...dataC[0]?.rates || [],
       ];
 
       // Remove duplicates by currency code (code is unique for each currency)
@@ -87,8 +111,10 @@ export default function CurrencyRatesScreen() {
       });
 
       setArchivedRates(uniqueRates);
+      console.log("Archived Rates: ", uniqueRates);  // Log the fetched archived rates
     } catch (err) {
       setErrorArchived('Failed to fetch archived currency rates');
+      console.error("Error fetching archived rates: ", err);  // Log any errors
     } finally {
       setLoadingArchived(false);
     }

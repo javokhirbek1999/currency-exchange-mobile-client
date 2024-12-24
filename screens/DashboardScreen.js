@@ -4,31 +4,28 @@ import axios from '../axios'; // Adjust the import path as necessary
 import AsyncStorage from '@react-native-async-storage/async-storage'; // For retrieving user data
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 
-export default function DashboardScreen() {
-  const [userName, setUserName] = useState(''); 
-  const [wallets, setWallets] = useState([]); 
+export default function DashboardScreen({ route }) {
+  const [userName, setUserName] = useState('');
+  const [wallets, setWallets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Fetch user data from AsyncStorage
-  React.useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userData = await AsyncStorage.getItem('user_data');
-        if (userData) {
-          const parsedData = JSON.parse(userData);
-          setUserName(parsedData.first_name); // Set user's first name
-        }
-      } catch (error) {
-        console.error('Failed to fetch user data:', error);
+  const fetchUserData = async () => {
+    try {
+      const userData = await AsyncStorage.getItem('user_data');
+      if (userData) {
+        const parsedData = JSON.parse(userData);
+        setUserName(parsedData.first_name); // Set user's first name
       }
-    };
-    fetchUserData();
-  }, []);
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+    }
+  };
 
   // Fetch wallets data
   const fetchWallets = async () => {
-    setLoading(true); 
+    setLoading(true);
     try {
       const response = await axios.get('/wallets/');
       setWallets(response.data); // Update state with the new wallets
@@ -36,15 +33,19 @@ export default function DashboardScreen() {
       console.error('Error fetching wallets:', err);
       setError(err.message || 'An error occurred');
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
-  // Fetch wallets data whenever the screen comes into focus
+  // Fetch user data and wallets when the screen is focused or profile updated
   useFocusEffect(
     React.useCallback(() => {
-      fetchWallets(); // Fetch wallets when the screen is focused
-    }, []) // Empty dependency array ensures this effect runs only when the screen is focused
+      fetchUserData();
+      fetchWallets();
+      if (route.params?.profileUpdated) {
+        fetchUserData();  // Re-fetch user data if profile was updated
+      }
+    }, [route.params?.profileUpdated]) // Dependency on profileUpdated parameter
   );
 
   if (loading) {
