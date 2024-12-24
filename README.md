@@ -80,20 +80,23 @@ Access the `axios.js` file in the home folder of the mobile client and change th
 ---
 ## Usage
 
-1. Open your camera or your Expo Go App. You can the QR code to automatically run your app on Expo Go or you can see the app once you open the Expo Go.
+1. Open your camera or your Expo Go App. You can scan the QR code to automatically run your app on Expo Go or you can see the app once you open the Expo Go.
 
 **Splash Screen**
+<br/>
 ![flash-screen](./assets/AppScreenshots/splash_screen.jpg)
 
 
 2. After Splash Screen, you will see home screen
 
 **Home Screen**
+<br/>
 ![home-screen](./assets/AppScreenshots/home_screen.jpg)
 
 3. Register a new account:
 
 **Registeration Screen**
+<br/>
 ![register-screen](./assets/AppScreenshots/register_screen_blank.jpg)
 
 <p>Fill in the valid details</p>
@@ -119,11 +122,13 @@ Access the `axios.js` file in the home folder of the mobile client and change th
 <p>Once done, click Login Button.</p>
 
 **Dashboard Screen**
+<br/>
 ![dashboard-screen](./assets/AppScreenshots/dashboard_welcome_screen.jpg)
 
 <p>As you can see that once the user is successfully registered, the user will have PLN wallet created automatically.</p>
 
 **Wallets Screen**
+<br/>
 ![wallets-screen](./assets/AppScreenshots/wallets_screen.jpg)
 
 <p>You can deposit funds by entering your bank account number and the amount. The currency will be automatically deposited in selected wallet currency.</p>
@@ -183,14 +188,14 @@ Access the `axios.js` file in the home folder of the mobile client and change th
 
 
 **Transactions History Screen**
-
+<br/>
 ![transactions-history-screen](./assets/AppScreenshots/transaction_screen.jpg)
 
 <p>You can see all of your deposit,withdrawl and transfer transactions history in this screen order from latest to the oldest.</p>
 
 
 **Currency Exchange Rates Screen**
-
+<br/>
 ![current-exchange-rates](./assets/AppScreenshots/current_currency_exchange_rates_screen.jpg)
 
 <p>In currency exchange rates screen, you can see the currency exchange rates.</p>
@@ -212,7 +217,7 @@ Access the `axios.js` file in the home folder of the mobile client and change th
 
 
 **User Profile Screen**
-
+<br/>
 ![user-profile-screen](./assets/AppScreenshots/user_profiles_screen.jpg)
 
 
