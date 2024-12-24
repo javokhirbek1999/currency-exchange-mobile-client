@@ -5,7 +5,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Currency Exchange</Text>
+      <Text style={styles.title}>Welcome to UEHS Bank</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('Login')}
